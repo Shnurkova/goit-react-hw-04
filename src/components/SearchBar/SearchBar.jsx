@@ -27,7 +27,7 @@ export default function SearchBar({ onSearch }) {
           className={css.input}
           type="text"
           name="searchImg"
-          autoComplete="off"
+           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
         />

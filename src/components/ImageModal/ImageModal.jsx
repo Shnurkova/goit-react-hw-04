@@ -1,26 +1,30 @@
-// import css from './ImageModal.module.css';
-import Modal from 'react-modal';
+import Modal from "react-modal";
 
-export default function ImageModal({
-  isOpen,
-  onRequestClose,
-  modalImageUrl,
-  modalImageAlt,
-}) {
-  Modal.setAppElement('#root');
+const customStyles = {
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    border: "none",
+    background: "none",
+    overflow: "visible",
+    height: "500px",
+    width: "auto",
+  },
+};
+
+Modal.setAppElement("#root");
+
+export default function ImageModal({ isOpen, onClose, imageUrl }) {
   return (
-    <Modal
-    //   className={css.modal}
-    //   overlayClassName={css.overlay}
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel="Modal image"
-    >
-      <img
-        src={modalImageUrl}
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        alt={modalImageAlt}
-      />
+    <Modal isOpen={isOpen} onRequestClose={onClose} style={customStyles}>
+      <img src={imageUrl} alt="Large" />
     </Modal>
   );
 }

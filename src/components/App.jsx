@@ -1,12 +1,13 @@
 // import axios from "axios";
 import { useEffect, useState } from "react";
+import ImageGallery from "./ImageGallery/ImageGallery";
 import { getImages } from "./img-api";
-import ImageGallery from "./ImageGallery/ImageGallery" ;
 import SearchBar from "./SearchBar/SearchBar";
 import Loader from "./Loader/Loader";
 import ErrorMessage from "./ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "./LoadMoreBtn/LoadMoreBtn";
-// import ImageModal from "./ImageModal/ImageModal";
+import ImageModal from "./ImageModal/ImageModal";
+
 
 
 export default function App() {
@@ -16,26 +17,24 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalPage, setTotalPage] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
 
+  
   useEffect(() => {
     if (searchQuery.trim() === "") {
       return;
     }
-      async function getPhoto() {
-        try {
-          setLoading(true);
-          setError(false);
-          const data = await getImages(searchQuery, page);
-          setTotalPage(page < Math.ceil(data.total / 15));
-          setImages(data.results);
-        } catch (error) {
-          setError(true);
-        }
-      }
-    getPhoto();
+  
     async function fetchImages() {
       try {
-        setImages((prevState) => [...prevState, ...images]);
+        setLoading(true);
+        setError(false);
+        const { results, total } = await getImages(searchQuery, page);
+       
+        setImages((prevState) => [...prevState, ...results]);
+         setTotalPage(page < Math.ceil(total / 15));
+        
       } catch (error) {
         setError(true);
       } finally {
@@ -44,7 +43,7 @@ export default function App() {
     }
 
     fetchImages();
-  }, [page, searchQuery]);
+  }, [searchQuery, page]);
 
   const handleSearch = async (searchImg) => {
     setSearchQuery(searchImg);
@@ -56,16 +55,37 @@ export default function App() {
     setPage(page + 1);
    
   };
+// modal 
+  const openModal = (imageUrl) => {
+      setSelectedImageUrl(imageUrl);
+      setModalIsOpen(true);
+    };
+
+  const closeModal = () => {
+      setSelectedImageUrl("");
+      setModalIsOpen(false);
+  };
+
 
   return (
     <div>
       <SearchBar onSearch={handleSearch} />
 
       {error && <ErrorMessage />}
-      {images.length > 0 && <ImageGallery items={images} />}
+
+      {images.length > 0 && (
+        <ImageGallery items={images} onImageClick={openModal} />
+      )}
       {totalPage && <LoadMoreBtn onClick={hendleLoadMore} />}
 
       {loading && <Loader />}
+
+   
+      <ImageModal
+        isOpen={modalIsOpen}
+        onClose={closeModal}
+        imageUrl={selectedImageUrl}
+      />
     </div>
   );
 }
